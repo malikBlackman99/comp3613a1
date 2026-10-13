@@ -1,9 +1,6 @@
-from __future__ import annotations
-
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from pydantic import EmailStr
-from sqlalchemy.orm import Mapped
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
@@ -22,6 +19,6 @@ class UserBase(SQLModel):
 class User(UserBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
 
-    listings: Mapped[list["Listing"]] = Relationship(back_populates="landlord")
-    bookings: Mapped[list["Booking"]] = Relationship(back_populates="student")
-    reviews: Mapped[list["Review"]] = Relationship(back_populates="student")
+    listings: List["Listing"] = Relationship(back_populates="landlord")
+    bookings: List["Booking"] = Relationship(back_populates="student")
+    reviews: List["Review"] = Relationship(back_populates="student")

@@ -184,6 +184,72 @@ note: get_all used select(Listing) via db.exec in the repository; Guide added se
 
 Public `/listings` grid with search and View → detail. Booking on detail stays signed-in. Demo listings seed with landlord / landlordpass.
 
+### Manage Listings (Landlord)
+
+Choice A: image URL text field (`listingImg`) on Listing. Choice A: landlord average rating is the mean of all review ratings across that landlord's listings, computed in the service (`landlord_average_rating`). Profile shows listing count and average rating stars; Manage Listings page has the add form (name, address, city, price, type, details, image URL) and cards with View. Thin routes construct `ListingRepository` + `AccommodationService` and call methods — no SQL in routers.
+
+<!-- student-build:code-check
+workflow: Manage Listings (Landlord)
+form: choice
+layer: other
+architecture_ok: yes
+implement_confidence: 0.68
+passed: yes
+note: Student chose optional image URL text field on Listing for MVP images.
+-->
+
+<!-- student-build:code-check
+workflow: Manage Listings (Landlord)
+form: choice
+layer: other
+architecture_ok: yes
+implement_confidence: 0.68
+passed: yes
+note: Student chose average of all reviews across the landlord's listings, computed in the service.
+-->
+
+<!-- student-build:code-check
+workflow: Manage Listings (Landlord)
+form: snippet
+layer: model
+architecture_ok: yes
+implement_confidence: 0.60
+passed: yes
+note: Student added listingImg Optional[str] field; needed fixes for Optional casing and nullable.
+-->
+
+<!-- student-build:code-check
+workflow: Manage Listings (Landlord)
+form: snippet
+layer: router
+architecture_ok: yes
+implement_confidence: 0.62
+passed: yes
+note: Student bound listingImg Form field and passed it into service.create_listing in create_listing route; no SQL in route.
+-->
+
+<!-- student-build:code-check
+workflow: Manage Listings (Landlord)
+form: snippet
+layer: service
+architecture_ok: yes
+implement_confidence: 0.48
+passed: partial
+note: Student attempted listingImg parameter handling in create_listing service; three failed None-safety attempts, Guide completed that param line; student then completed landlord_average_rating correctly (fetch listings, collect ratings, avg or None).
+-->
+
+<!-- student-build:code-check
+workflow: Manage Listings (Landlord)
+form: snippet
+layer: service
+architecture_ok: yes
+implement_confidence: 0.52
+passed: yes
+note: Student completed landlord_average_rating: get_user_listings, collect review ratings via review_repository, return avg or None. No raw SQL.
+-->
+
+Seed account landlord / landlordpass. Profile page shows listing count and average rating. `/manage-listings` is a searchable grid of the landlord's listings with View links and an **Add Listing** button; `/manage-listings/new` is the add form (name, address, city, pricing, details, image URL). Create redirects back to the manage grid.
+
 ## Deployed app
 
 Phase 6. Public Render URL (not localhost). Markers open this to mark the three workflows.

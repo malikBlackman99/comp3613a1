@@ -8,55 +8,40 @@
       <p class="section-label mb-1">Manage Listings</p>
       <h1 class="section-title mb-0">Your property listings</h1>
     </div>
+    <div class="inline-actions">
+      <a class="btn btn-outline-secondary" href="{{ url_for('profile_view') }}">Back to profile</a>
+      <a class="btn btn-primary" href="{{ url_for('create_listing_view') }}">Add Listing</a>
+    </div>
   </div>
 
-  <div class="detail-layout">
-    <div class="form-card">
-      <form method="POST" action="{{ url_for('create_listing') }}">
-        <div class="form-group">
-          <label for="title">Listing name</label>
-          <input id="title" name="title" type="text" required>
-        </div>
-        <div class="form-group">
-          <label for="address">Address</label>
-          <input id="address" name="address" type="text" required>
-        </div>
-        <div class="form-group">
-          <label for="city">City</label>
-          <input id="city" name="city" type="text" required>
-        </div>
-        <div class="form-group">
-          <label for="price_per_month">Price per month</label>
-          <input id="price_per_month" name="price_per_month" type="number" min="0" step="0.01" required>
-        </div>
-        <div class="form-group">
-          <label for="property_type">Property type</label>
-          <select id="property_type" name="property_type">
-            <option>Apartment</option>
-            <option>Studio</option>
-            <option>House</option>
-            <option>Shared room</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="description">Details</label>
-          <textarea id="description" name="description" rows="4"></textarea>
-        </div>
-        <button class="btn btn-primary" type="submit">Add listing</button>
-      </form>
-    </div>
+  <form class="search-form mb-4" method="GET" action="{{ url_for('manage_listings_view') }}">
+    <input class="form-control" type="text" name="q" value="{{ query }}" placeholder="Search your listings" aria-label="Search your listings">
+    <button class="btn btn-primary" type="submit">Search</button>
+  </form>
 
-    <div class="profile-stack">
-      {% for listing in listings %}
-      <div class="profile-card">
-        <h3>{{ listing.title }}</h3>
+  <div class="listings-grid">
+    {% for listing in listings %}
+    <article class="listing-card">
+      {% if listing.listingImg %}
+      <img src="{{ listing.listingImg }}" alt="{{ listing.title }}" style="width:100%;height:160px;object-fit:cover;border-radius:8px 8px 0 0;">
+      {% else %}
+      <div class="listing-card-image"></div>
+      {% endif %}
+      <div class="listing-card-body">
+        <div class="listing-card-header">
+          <h3>{{ listing.title }}</h3>
+          <span class="tag">{{ listing.property_type }}</span>
+        </div>
         <p class="meta-line">{{ listing.city }} · {{ listing.address }}</p>
         <p class="price">${{ '%.2f'|format(listing.price_per_month) }}/month</p>
+        <div class="inline-actions">
+          <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('listing_detail_view', listing_id=listing.id) }}">View</a>
+        </div>
       </div>
-      {% else %}
-      <div class="alert alert-light mb-0">No listings yet.</div>
-      {% endfor %}
-    </div>
+    </article>
+    {% else %}
+    <div class="alert alert-light mb-0">No listings yet. Use Add Listing to publish your first property.</div>
+    {% endfor %}
   </div>
 </div>
 {% endblock %}

@@ -1,0 +1,53 @@
+{% extends "authenticated-base.html" %}
+{% block title %}Add listing{% endblock %}
+
+{% block subpage_content %}
+<div class="page-shell">
+  <div class="section-header">
+    <div>
+      <p class="section-label mb-1">Manage Listings</p>
+      <h1 class="section-title mb-0">Add a listing</h1>
+    </div>
+    <a class="btn btn-outline-secondary" href="{{ url_for('manage_listings_view') }}">Back to manage listings</a>
+  </div>
+
+  <div class="form-card" style="max-width:640px;">
+    <form method="POST" action="{{ url_for('create_listing') }}">
+      <div class="form-group">
+        <label for="title">Listing name</label>
+        <input id="title" name="title" type="text" placeholder="Enter listing name..." required>
+      </div>
+      <div class="form-group">
+        <label for="address">Address</label>
+        <input id="address" name="address" type="text" placeholder="Enter listing address..." required>
+      </div>
+      <div class="form-group">
+        <label for="city">City</label>
+        <input id="city" name="city" type="text" required>
+      </div>
+      <div class="form-group">
+        <label for="price_per_month">Pricing</label>
+        <input id="price_per_month" name="price_per_month" type="number" min="0" step="0.01" placeholder="Enter price..." required>
+      </div>
+      <div class="form-group">
+        <label for="property_type">Property type</label>
+        <select id="property_type" name="property_type">
+          <option>Apartment</option>
+          <option>Studio</option>
+          <option>House</option>
+          <option>Shared room</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="description">Details</label>
+        <textarea id="description" name="description" rows="4" placeholder="Enter listing details..."></textarea>
+      </div>
+      <div class="form-group">
+        <label for="listingImg">Images</label>
+        <input id="listingImg" name="listingImg" type="url" placeholder="https://example.com/photo.jpg">
+      </div>
+      <button class="btn btn-primary" type="submit">Add Listing</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -45,7 +45,7 @@ def cmd_init(args: argparse.Namespace) -> None:
 
 
 def cmd_seed(args: argparse.Namespace) -> None:
-    """Insert demo users."""
+    """Insert demo users, landlords, students, listings, bookings, and reviews."""
     from app.database import ensure_db_and_tables, get_cli_session
     from app.repositories.user import UserRepository
     from app.schemas.user import AdminCreate, RegularUserCreate
@@ -59,6 +59,20 @@ def cmd_seed(args: argparse.Namespace) -> None:
         ("admin", "admin@example.com", "adminpass", "admin"),
         ("landlord", "landlord@example.com", "landlordpass", "regular_user"),
     ]
+
+    landlord_names = [
+        "alice", "carol", "dave", "erin", "frank",
+        "grace", "heidi", "ivan", "judy", "mallory", "niamh",
+    ]
+    student_names = [
+        "dylan", "peggy", "trent", "victor", "wendy",
+        "xavier", "yara", "zoe", "oscar", "maya",
+    ]
+
+    for name in landlord_names:
+        demo_users.append((name, f"{name}@landlord.com", f"{name}pass", "regular_user"))
+    for name in student_names:
+        demo_users.append((name, f"{name}@student.com", f"{name}pass", "regular_user"))
 
     created = 0
     skipped = 0
@@ -81,48 +95,116 @@ def cmd_seed(args: argparse.Namespace) -> None:
             print(f"  create {username} ({role})")
             created += 1
         _seed_demo_listings(session, repo)
-    print(f"Seed done ? created {created}, skipped {skipped}.")
+    print(f"Seed done - created {created}, skipped {skipped}.")
     print("Login with bob/bobpass, admin/adminpass, or landlord/landlordpass")
 
 
 def _seed_demo_listings(session, user_repo) -> None:
+    from datetime import date, timedelta
+
+    from app.models.booking import Booking
     from app.models.listing import Listing
+    from app.models.review import Review
+    from app.repositories.booking import BookingRepository
     from app.repositories.listing import ListingRepository
+    from app.repositories.review import ReviewRepository
 
     listing_repo = ListingRepository(session)
     if listing_repo.get_all():
         return
-    landlord = user_repo.get_by_username("landlord")
-    if landlord is None:
-        return
-    samples = [
-        {
-            "title": "Harbour View",
-            "address": "12 Campus Road",
-            "city": "St. Augustine",
-            "price_per_month": 3200.0,
-            "property_type": "Apartment",
-            "description": "Two-bedroom unit walking distance to campus.",
-        },
-        {
-            "title": "Oakline Court",
-            "address": "44 New Town Street",
-            "city": "New Town",
-            "price_per_month": 2800.0,
-            "property_type": "Studio",
-            "description": "Furnished studio with reliable transit nearby.",
-        },
-        {
-            "title": "City Loop",
-            "address": "9 Centre Avenue",
-            "city": "Town Centre",
-            "price_per_month": 3500.0,
-            "property_type": "Shared",
-            "description": "Shared house with private rooms for students.",
-        },
+
+    landlord_usernames = [
+        "landlord", "alice", "carol", "dave", "erin", "frank",
+        "grace", "heidi", "ivan", "judy", "mallory", "niamh",
     ]
-    for sample in samples:
-        listing_repo.create(Listing(landlord_id=landlord.id, **sample))
+    landlords = [user_repo.get_by_username(n) for n in landlord_usernames]
+    landlords = [u for u in landlords if u is not None]
+    if not landlords:
+        return
+
+    student_usernames = [
+        "bob", "dylan", "peggy", "trent", "victor",
+        "wendy", "xavier", "yara", "zoe", "oscar", "maya",
+    ]
+    students = [user_repo.get_by_username(n) for n in student_usernames]
+    students = [u for u in students if u is not None]
+
+    property_types = ["Apartment", "Studio", "House", "Shared room"]
+    cities = [
+        "St. Augustine", "New Town", "Town Centre", "Chaguanas",
+        "San Fernando", "Port of Spain", "Trinidad", "Couva",
+    ]
+    street_names = [
+        "Campus Road", "New Town Street", "Centre Avenue", "Rose Drive",
+        "Palm Street", "University Way", "Garden Lane", "Market Road",
+        "Station Avenue", "Hillside Road", "River Path", "Beach Row",
+    ]
+    adjectives = [
+        "Harbour View", "Oakline Court", "City Loop", "Palm Residences",
+        "Sunrise Flats", "Green Gate", "Riverbend", "Hilltop Suites",
+        "Campus Nest", "Metro Lofts", "Coral House", "Bamboo Lodge",
+        "Starlight Apartments", "Cedar Hall", "Mango Court", "Reef Side",
+        "Lantern House", "Silver Birch", "Golden Leaf", "Blue Horizon",
+        "Quiet Corner", "Busy Bee", "Scholar House", "Transit Point",
+        "Garden Spot", "Beachside", "Uptown Studio", "Midtown Flat",
+        "West End House", "East Gate", "North View", "South Bank",
+        "Central Court", "Park Lane", "College Road",
+    ]
+
+    listing_rows: list[Listing] = []
+    for i, title in enumerate(adjectives):
+        landlord = landlords[i % len(landlords)]
+        price = 1200.0 + (i * 97) % 2800
+        listing = Listing(
+            title=title,
+            address=f"{10 + i} {street_names[i % len(street_names)]}",
+            city=cities[i % len(cities)],
+            price_per_month=float(price),
+            property_type=property_types[i % len(property_types)],
+            status="available",
+            description=f"Comfortable student accommodation near campus - {title}.",
+            available=True,
+            landlord_id=landlord.id,
+        )
+        listing_repo.create(listing)
+        listing_rows.append(listing)
+
+    booking_repo = BookingRepository(session)
+    review_repo = ReviewRepository(session)
+    today = date.today()
+    for i, listing in enumerate(listing_rows):
+        if i % 2 == 0 and students:
+            student = students[i % len(students)]
+            start = today - timedelta(days=60 - i)
+            end = start + timedelta(days=90)
+            booking = Booking(
+                student_id=student.id,
+                listing_id=listing.id,
+                start_date=start,
+                end_date=end,
+                status="complete" if i % 4 == 0 else "confirmed",
+                total_price=round(float(listing.price_per_month) * 3, 2),
+            )
+            booking_repo.create(booking)
+            if i % 3 != 2:
+                rating = [5, 4, 3, 5, 4, 2, 5, 4][i % 8]
+                comments = [
+                    "Great place, would book again.",
+                    "Close to campus and quiet.",
+                    "Manageable price, good transport.",
+                    "Landlord was responsive.",
+                    "Clean and well kept.",
+                    "A bit small but fine for one.",
+                    "Loved the neighborhood.",
+                    "Would recommend to other students.",
+                ]
+                review = Review(
+                    student_id=student.id,
+                    listing_id=listing.id,
+                    rating=rating,
+                    comment=comments[i % len(comments)],
+                )
+                review_repo.create(review)
 
 
 def cmd_run(args: argparse.Namespace) -> None:

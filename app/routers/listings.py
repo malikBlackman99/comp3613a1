@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
+from typing import Optional
 
 from fastapi import Form, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -135,17 +136,33 @@ async def manage_listings_view(
     request: Request,
     db: SessionDep,
     user: AuthDep,
+    q: str | None = None,
 ):
+    query = q or ""
     repo = ListingRepository(db)
     service = AccommodationService(repo)
-    listings = service.get_user_listings(user.id)
+    listings = service.get_user_listings(user.id, query=query)
     return templates.TemplateResponse(
         request=request,
         name="manage_listings.html",
         context={
             "user": user,
             "listings": listings,
+            "query": query,
         },
+    )
+
+
+@router.get("/manage-listings/new", response_class=HTMLResponse, name="create_listing_view")
+async def create_listing_view(
+    request: Request,
+    db: SessionDep,
+    user: AuthDep,
+):
+    return templates.TemplateResponse(
+        request=request,
+        name="add_listing.html",
+        context={"user": user},
     )
 
 
@@ -160,6 +177,7 @@ async def create_listing(
     price_per_month: float = Form(...),
     property_type: str = Form(...),
     description: str = Form(default=""),
+    listingImg: Optional[str] = Form(default=None),
 ):
     repo = ListingRepository(db)
     service = AccommodationService(repo)
@@ -172,6 +190,7 @@ async def create_listing(
             price_per_month=price_per_month,
             property_type=property_type,
             description=description,
+            listingImg=listingImg,
         )
         flash(request, "Listing published.", "success")
     except Exception:
@@ -188,14 +207,13 @@ async def profile_view(
     repo = ListingRepository(db)
     service = AccommodationService(repo)
     listings = service.get_user_listings(user.id)
-    review_repo = ReviewRepository(db)
-    user_reviews = review_repo.get_for_student(user.id)
+    average_rating = service.landlord_average_rating(user.id)
     return templates.TemplateResponse(
         request=request,
         name="profile.html",
         context={
             "user": user,
             "listings": listings,
-            "user_reviews": user_reviews,
+            "average_rating": average_rating,
         },
     )

@@ -12,7 +12,11 @@
   </div>
 
   <div class="detail-layout">
+    {% if listing.listingImg %}
+    <img class="detail-media" src="{{ listing.listingImg }}" alt="{{ listing.title }}" style="width:100%;object-fit:cover;border-radius:12px;">
+    {% else %}
     <div class="detail-media"></div>
+    {% endif %}
 
     <aside class="detail-box">
       <p class="section-label mb-1">{{ listing.city }}</p>

@@ -17,7 +17,11 @@
   <div class="listings-grid">
     {% for listing in listings %}
     <article class="listing-card">
+      {% if listing.listingImg %}
+      <img src="{{ listing.listingImg }}" alt="{{ listing.title }}" style="width:100%;height:160px;object-fit:cover;border-radius:8px 8px 0 0;">
+      {% else %}
       <div class="listing-card-image"></div>
+      {% endif %}
       <div class="listing-card-body">
         <div class="listing-card-header">
           <h3>{{ listing.title }}</h3>

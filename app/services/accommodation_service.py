@@ -38,6 +38,7 @@ class AccommodationService:
         price_per_month: float,
         property_type: str,
         description: str,
+        listingImg: Optional[str] = None,
     ) -> Listing:
         listing = Listing(
             title=title.strip(),
@@ -49,6 +50,7 @@ class AccommodationService:
             available=True,
             status="available",
             landlord_id=landlord_id,
+            listingImg=(listingImg or "").strip() or None,
         )
         return self.listing_repository.create(listing)
 
@@ -93,5 +95,19 @@ class AccommodationService:
     def get_reviews_for_listing(self, listing_id: int) -> list[Review]:
         return self.review_repository.get_for_listing(listing_id)
 
-    def get_user_listings(self, landlord_id: int) -> list[Listing]:
-        return self.listing_repository.get_by_landlord(landlord_id)
+    def get_user_listings(self, landlord_id: int, query: str = "") -> list[Listing]:
+        return self.listing_repository.get_by_landlord(landlord_id, query=query)
+
+    def landlord_average_rating(self, landlord_id: int) -> float | None:
+        listings = self.get_user_listings(landlord_id)
+        ratings: list[int] = []
+        for listing in listings:
+            reviews = self.review_repository.get_for_listing(listing.id)
+            # === STUDENT: extend ratings with each review's rating ===
+            ratings.extend([review.rating for review in reviews])
+            # === END STUDENT ===
+        if not ratings:
+            return None
+        # === STUDENT: return the average of ratings ===
+        return sum(ratings) / len(ratings)
+        # === END STUDENT ===

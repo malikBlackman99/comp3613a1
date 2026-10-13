@@ -30,10 +30,15 @@ class ListingRepository:
     def get_by_id(self, listing_id: int) -> Optional[Listing]:
         return self.db.get(Listing, listing_id)
 
-    def get_by_landlord(self, landlord_id: int) -> list[Listing]:
-        return self.db.exec(
-            select(Listing).where(Listing.landlord_id == landlord_id).order_by(Listing.id)
-        ).all()
+    def get_by_landlord(self, landlord_id: int, query: str = "") -> list[Listing]:
+        statement = select(Listing).where(Listing.landlord_id == landlord_id)
+        if query:
+            statement = statement.where(
+                (Listing.title.ilike(f"%{query}%"))
+                | (Listing.city.ilike(f"%{query}%"))
+                | (Listing.address.ilike(f"%{query}%"))
+            )
+        return list(self.db.exec(statement.order_by(Listing.id)).all())
 
     def update(self, listing: Listing) -> Listing:
         self.db.add(listing)

@@ -1,9 +1,6 @@
-from __future__ import annotations
-
 from datetime import date
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy.orm import Mapped
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
@@ -23,5 +20,5 @@ class BookingBase(SQLModel):
 class Booking(BookingBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
 
-    student: Mapped["User"] = Relationship(back_populates="bookings")
-    listing: Mapped["Listing"] = Relationship(back_populates="bookings")
+    student: Optional["User"] = Relationship(back_populates="bookings")
+    listing: Optional["Listing"] = Relationship(back_populates="bookings")
