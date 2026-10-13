@@ -6,49 +6,61 @@
   <div class="section-header">
     <div>
       <p class="section-label mb-1">Leave Review</p>
-      <h1 class="section-title mb-0">Share your experience</h1>
+      <h1 class="section-title mb-0">Your reviews</h1>
     </div>
+    <a class="btn btn-primary" href="#leave-review-form">Leave Review</a>
   </div>
 
-  <div class="detail-layout">
-    <div class="form-card">
-      <form method="POST" action="{{ url_for('submit_review') }}">
-        <div class="form-group">
-          <label for="listing_id">Select property</label>
-          <select id="listing_id" name="listing_id" required>
-            {% for listing in listings %}
-            <option value="{{ listing.id }}">{{ listing.title }} · {{ listing.city }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="rating">Rating</label>
-          <select id="rating" name="rating" required>
-            <option value="5">★★★★★</option>
-            <option value="4">★★★★☆</option>
-            <option value="3">★★★☆☆</option>
-            <option value="2">★★☆☆☆</option>
-            <option value="1">★☆☆☆☆</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="comment">Review</label>
-          <textarea id="comment" name="comment" rows="5" placeholder="Tell other students what it was like..."></textarea>
-        </div>
-        <button class="btn btn-primary" type="submit">Leave review</button>
-      </form>
-    </div>
-
-    <div class="profile-stack">
-      {% for review in user_reviews %}
-      <div class="review-item">
-        <div class="rating-stars">{'★' * review.rating}</div>
+  <div class="profile-stack mb-4">
+    {% for review in user_reviews %}
+    <div class="review-item" style="display:flex;gap:1rem;align-items:flex-start;">
+      {% if review.listing and review.listing.listingImg %}
+      <img src="{{ review.listing.listingImg }}" alt="{{ review.listing.title }}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;">
+      {% elif review.listing %}
+      <div style="width:80px;height:80px;border-radius:8px;background:var(--bs-secondary-bg,#eee);flex-shrink:0;"></div>
+      {% endif %}
+      <div>
+        {% if review.listing %}
+        <p class="meta-line mb-1"><strong>{{ review.listing.title }}</strong> · {{ review.listing.city }}</p>
+        {% endif %}
+        <div class="rating-stars">{{ '★' * review.rating }}{{ '☆' * (5 - review.rating) }}</div>
         <p class="mb-0">{{ review.comment }}</p>
       </div>
-      {% else %}
-      <div class="alert alert-light mb-0">Your reviews will appear here.</div>
-      {% endfor %}
     </div>
+    {% else %}
+    <div class="alert alert-light mb-0">Your reviews will appear here.</div>
+    {% endfor %}
+  </div>
+
+  <div class="form-card" id="leave-review-form" style="max-width:640px;">
+    <h2 class="section-title" style="font-size:1.25rem;">Leave a review</h2>
+    <form method="POST" action="{{ url_for('submit_review') }}">
+      <div class="form-group">
+        <label for="listing_id">Select Previously Booked Listing</label>
+        <select id="listing_id" name="listing_id" required>
+          {% for listing in listings %}
+          <option value="{{ listing.id }}">{{ listing.title }} · {{ listing.city }}</option>
+          {% else %}
+          <option value="" disabled selected>No booked listings yet</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="comment">Add review</label>
+        <textarea id="comment" name="comment" rows="5" placeholder="Add review..." required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="rating">Select Rating</label>
+        <select id="rating" name="rating" required>
+          <option value="5">★★★★★</option>
+          <option value="4">★★★★☆</option>
+          <option value="3">★★★☆☆</option>
+          <option value="2">★★☆☆☆</option>
+          <option value="1">★☆☆☆☆</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" type="submit">Leave Review</button>
+    </form>
   </div>
 </div>
 {% endblock %}

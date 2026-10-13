@@ -98,6 +98,19 @@ class AccommodationService:
     def get_user_listings(self, landlord_id: int, query: str = "") -> list[Listing]:
         return self.listing_repository.get_by_landlord(landlord_id, query=query)
 
+    def get_booked_listings(self, student_id: int) -> list[Listing]:
+        # === STUDENT: return only listings this student has booked ===
+        # 1. Get the student's bookings via self.booking_repository
+        booking = self.booking_repository.get_for_student(student_id)
+        # 2. Collect unique listing_ids (a student may book the same listing once)
+        listing_ids = {booking.listing_id for booking in booking}
+        
+        # 3. Return the Listing rows for those ids (get_listing is fine to reuse)
+        return [listing for listing_id in listing_ids if (listing := self.get_listing(listing_id)) is not None]
+        # No raw SQL.
+        
+        # === END STUDENT ===
+
     def landlord_average_rating(self, landlord_id: int) -> float | None:
         listings = self.get_user_listings(landlord_id)
         ratings: list[int] = []

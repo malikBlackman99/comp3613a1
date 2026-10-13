@@ -98,7 +98,9 @@ async def reviews_view(
 ):
     repo = ListingRepository(db)
     service = AccommodationService(repo)
-    listings = service.list_listings(query="")
+    # === STUDENT: fetch only listings this student has booked (dropdown source) ===
+    listings = service.get_booked_listings(user.id)
+    # === END STUDENT ===
     review_repo = ReviewRepository(db)
     user_reviews = review_repo.get_for_student(user.id)
     return templates.TemplateResponse(

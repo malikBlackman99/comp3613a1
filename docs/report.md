@@ -250,6 +250,52 @@ note: Student completed landlord_average_rating: get_user_listings, collect revi
 
 Seed account landlord / landlordpass. Profile page shows listing count and average rating. `/manage-listings` is a searchable grid of the landlord's listings with View links and an **Add Listing** button; `/manage-listings/new` is the add form (name, address, city, pricing, details, image URL). Create redirects back to the manage grid.
 
+### Leave Review (Student)
+
+Choice A: the dropdown shows only listings the student has previously booked (wireframe's "Select Previously Booked Listing"). `Review.created_at` added from the ERD. Reviews page lists the student's reviews (listing thumbnail, title, stars, comment) then the form. Service `get_booked_listings` collects unique listing ids from the student's bookings via the booking repository. Thin route calls the service — no SQL in the router.
+
+<!-- student-build:code-check
+workflow: Leave Review (Student)
+form: choice
+layer: other
+architecture_ok: yes
+implement_confidence: 0.58
+passed: yes
+note: Student chose previously booked listings only for the review dropdown (matches wireframe).
+-->
+
+<!-- student-build:code-check
+workflow: Leave Review (Student)
+form: snippet
+layer: model
+architecture_ok: yes
+implement_confidence: 0.55
+passed: yes
+note: Student added created_at datetime to ReviewBase; needed colon fix and stray import removed.
+-->
+
+<!-- student-build:code-check
+workflow: Leave Review (Student)
+form: snippet
+layer: service
+architecture_ok: yes
+implement_confidence: 0.55
+passed: yes
+note: Student completed get_booked_listings: bookings via booking_repository, unique listing_ids set, resolve via get_listing. No raw SQL.
+-->
+
+<!-- student-build:code-check
+workflow: Leave Review (Student)
+form: snippet
+layer: router
+architecture_ok: yes
+implement_confidence: 0.45
+passed: yes
+note: Student route snippet took two wrong attempts (fake query string, then passing a list into query=) before calling service.get_booked_listings(user.id) directly. Guide required the rewrite.
+-->
+
+Seed includes 12 landlords, 10 students, ~35 listings, bookings and reviews so the review dropdown and average ratings have data.
+
 ## Deployed app
 
 Phase 6. Public Render URL (not localhost). Markers open this to mark the three workflows.
