@@ -24,7 +24,7 @@ async def listings_view(
 ):
     query = q or ""
     # === STUDENT: complete the listings_view handler ===
-    listings= AccommodationService(ListingRepository(db))
+    listings = AccommodationService(ListingRepository(db))
     listings = listings.list_listings(query=query)
     # === END STUDENT ===
     return templates.TemplateResponse(
