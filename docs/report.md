@@ -300,7 +300,9 @@ Seed includes 12 landlords, 10 students, ~35 listings, bookings and reviews so t
 
 Phase 6. Public Render URL (not localhost). Markers open this to mark the three workflows.
 
-https://
+https://faststarter-0g4k.onrender.com
+
+Render resources (matching `render.yaml`): web service `faststarter` (free, Oregon, auto-deploy on `main`) and Postgres `faststarter-db` (free, Oregon, PostgreSQL 16). `DATABASE_URI`, `SECRET_KEY`, and `CONFIG_PASSWORD` are set as service env vars from the Render API — no database password is stored in this report.
 
 ## Logins
 
