@@ -1,0 +1,25 @@
+{
+  "system": "Student Accommodation",
+  "actors": [
+    {"name": "Student", "side": "left"},
+    {"name": "Landlord", "side": "right"}
+  ],
+  "use_cases": [
+    {
+      "name": "View Listings",
+      "actors": ["Student", "Landlord"]
+    },
+    {
+      "name": "View Listing Details",
+      "extends": ["View Listings"]
+    },
+    {
+      "name": "Manage Listings",
+      "actors": ["Landlord"]
+    },
+    {
+      "name": "Leave Review",
+      "actors": ["Student"]
+    }
+  ]
+}

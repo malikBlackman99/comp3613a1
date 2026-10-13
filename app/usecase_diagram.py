@@ -129,6 +129,7 @@ def to_plantuml(spec: DiagramSpec) -> str:
     lines = [
         "@startuml",
         "!pragma layout smetana",
+        "left to right direction",
         "skinparam shadowing false",
         "skinparam actorBorderColor #1B365D",
         "skinparam actorFontColor #1E232D",
@@ -360,7 +361,6 @@ def _run_plantuml(puml: Path, dest: Path) -> None:
         "-charset",
         "UTF-8",
         "-tpng",
-        "-Playout=smetana",
         "-o",
         str(dest.parent.resolve()),
         str(puml.resolve()),

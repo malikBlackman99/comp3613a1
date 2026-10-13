@@ -1,0 +1,38 @@
+{% extends "authenticated-base.html" %}
+{% block title %}Listings{% endblock %}
+
+{% block subpage_content %}
+<div class="page-shell">
+  <div class="section-header">
+    <div>
+      <p class="section-label mb-1">View Listings</p>
+      <h1 class="section-title mb-0">Student accommodation</h1>
+    </div>
+    <form class="search-form" method="GET" action="{{ url_for('listings_view') }}">
+      <input class="form-control" type="text" name="q" value="{{ query }}" placeholder="Search city or postcode" aria-label="Search listings">
+      <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+  </div>
+
+  <div class="listings-grid">
+    {% for listing in listings %}
+    <article class="listing-card">
+      <div class="listing-card-image"></div>
+      <div class="listing-card-body">
+        <div class="listing-card-header">
+          <h3>{{ listing.title }}</h3>
+          <span class="tag">{{ listing.property_type }}</span>
+        </div>
+        <p class="meta-line">{{ listing.city }} · {{ listing.address }}</p>
+        <p class="price">${{ '%.2f'|format(listing.price_per_month) }}/month</p>
+        <div class="inline-actions">
+          <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('listing_detail_view', listing_id=listing.id) }}">View</a>
+        </div>
+      </div>
+    </article>
+    {% else %}
+    <div class="alert alert-info mb-0">No listings match your search.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

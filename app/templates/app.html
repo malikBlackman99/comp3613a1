@@ -1,9 +1,82 @@
 {% extends "authenticated-base.html" %}
-{% block title %}Home{% endblock %}
+{% block title %}Dashboard{% endblock %}
 
 {% block subpage_content %}
-<div class="container-fluid py-2">
-  <h1 class="h4 mb-2">Home</h1>
-  <p class="text-muted mb-0">Workflow screens replace this shell in Phase 5 implement.</p>
+<div class="container-fluid py-2 dashboard-shell">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <p class="section-label mb-1">Dashboard</p>
+      <h1 class="page-title mb-0">Student accommodation</h1>
+    </div>
+    <a class="btn btn-primary rounded-pill px-4" href="{{ url_for('listings_view') }}">Browse listings</a>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-md-4">
+      <div class="metric-card">
+        <span class="metric-label">Verified homes</span>
+        <strong class="metric-value">24</strong>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="metric-card">
+        <span class="metric-label">Book requests</span>
+        <strong class="metric-value">8</strong>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="metric-card">
+        <span class="metric-label">Average rating</span>
+        <strong class="metric-value">4.8★</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card-panel">
+        <div class="panel-header">
+          <h2>Featured listings</h2>
+          <a href="{{ url_for('listings_view') }}">View all</a>
+        </div>
+        <div class="list-tile-row">
+          <div class="listing-tile small">
+            <div class="listing-thumb placeholder-thumb"></div>
+            <div>
+              <h3>Harbour View</h3>
+              <p>St. Augustine</p>
+            </div>
+          </div>
+          <div class="listing-tile small">
+            <div class="listing-thumb placeholder-thumb alt"></div>
+            <div>
+              <h3>Oakline Court</h3>
+              <p>New Town</p>
+            </div>
+          </div>
+          <div class="listing-tile small">
+            <div class="listing-thumb placeholder-thumb accent"></div>
+            <div>
+              <h3>City Loop</h3>
+              <p>Town Centre</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card-panel">
+        <div class="panel-header">
+          <h2>Quick actions</h2>
+        </div>
+        <div class="stacked-actions">
+          <a href="{{ url_for('listings_view') }}" class="action-link">Browse listings</a>
+          <a href="{{ url_for('reviews_view') }}" class="action-link">Leave a review</a>
+          <a href="{{ url_for('manage_listings_view') }}" class="action-link">Manage listings</a>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

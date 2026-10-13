@@ -41,6 +41,16 @@ async def is_logged_in(request: Request, db:SessionDep):
 IsUserLoggedIn = Annotated[bool, Depends(is_logged_in)]
 AuthDep = Annotated[User, Depends(get_current_user)]
 
+
+async def get_optional_user(request: Request, db: SessionDep) -> User | None:
+    try:
+        return await get_current_user(request, db)
+    except HTTPException:
+        return None
+
+
+OptionalUser = Annotated[User | None, Depends(get_optional_user)]
+
 async def is_admin(user: User):
     return user.role == "admin"
 

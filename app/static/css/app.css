@@ -1,17 +1,16 @@
 :root {
-  /* Phase 5 theming: Guide overwrites these from docs/report.md preferences */
-  --brand-name: "FastStarter";
-  --brand-bg: #0c1218;
-  --brand-surface: #f7f4ef;
-  --brand-ink: #14202b;
-  --brand-muted: #6a7a88;
-  --brand-accent: #c45c26;
-  --brand-accent-2: #2a6f6b;
-  --brand-sidebar: #14202b;
-  --brand-sidebar-text: #a8b4bf;
-  --brand-font-display: "Fraunces", Georgia, serif;
-  --brand-font-body: "Source Sans 3", "Segoe UI", sans-serif;
-  --brand-radius: 0.85rem;
+  --brand-name: "StudentNest";
+  --brand-bg: #eef2f8;
+  --brand-surface: #ffffff;
+  --brand-ink: #0a0a0a;
+  --brand-muted: #4b5568;
+  --brand-accent: #1e4e8c;
+  --brand-accent-2: #c9a227;
+  --brand-sidebar: #0a0a0a;
+  --brand-sidebar-text: #c5d0e0;
+  --brand-font-display: "DM Sans", "Segoe UI", sans-serif;
+  --brand-font-body: "DM Sans", "Segoe UI", sans-serif;
+  --brand-radius: 0.5rem;
 }
 
 *,
@@ -40,10 +39,10 @@ body {
   grid-template-rows: auto 1fr auto;
   color: var(--brand-surface);
   background:
-    linear-gradient(160deg, rgba(12, 18, 24, 0.55), rgba(12, 18, 24, 0.82)),
-    radial-gradient(ellipse 80% 60% at 15% 20%, rgba(42, 111, 107, 0.45), transparent 55%),
-    radial-gradient(ellipse 70% 50% at 90% 80%, rgba(196, 92, 38, 0.28), transparent 50%),
-    linear-gradient(180deg, #1a2834 0%, #0c1218 100%);
+    linear-gradient(165deg, rgba(10, 10, 10, 0.55), rgba(10, 10, 10, 0.88)),
+    radial-gradient(ellipse 70% 50% at 12% 18%, rgba(30, 78, 140, 0.45), transparent 55%),
+    radial-gradient(ellipse 55% 45% at 92% 78%, rgba(201, 162, 39, 0.22), transparent 50%),
+    linear-gradient(180deg, #0f1726 0%, #0a0a0a 100%);
   position: relative;
   overflow: hidden;
 }
@@ -179,8 +178,8 @@ body {
   top: 18%;
   background:
     radial-gradient(circle at 35% 35%, rgba(247, 244, 239, 0.18), transparent 55%),
-    radial-gradient(circle at 70% 70%, rgba(42, 111, 107, 0.5), transparent 60%),
-    rgba(196, 92, 38, 0.15);
+    radial-gradient(circle at 70% 70%, rgba(30, 78, 140, 0.55), transparent 60%),
+    rgba(201, 162, 39, 0.18);
   filter: blur(2px);
   animation: landing-drift 14s ease-in-out infinite alternate;
   pointer-events: none;
@@ -237,7 +236,7 @@ body {
 .auth-panel .brand-wordmark {
   font-size: 1.75rem;
   margin-bottom: 0.25rem;
-  color: var(--brand-accent);
+  color: var(--brand-accent-2);
 }
 
 .auth-panel .auth-tagline {
@@ -270,4 +269,325 @@ body {
 
 .auth-back:hover {
   color: var(--brand-accent);
+}
+
+.dashboard-shell {
+  color: var(--brand-ink);
+}
+
+.section-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brand-accent);
+}
+
+.page-title {
+  font-size: clamp(2rem, 3vw, 2.6rem);
+  font-weight: 700;
+  color: var(--brand-ink);
+}
+
+.metric-card,
+.card-panel {
+  background: rgba(255,255,255,0.88);
+  border: 1px solid rgba(23,49,61,0.08);
+  border-radius: 1rem;
+  box-shadow: 0 12px 20px rgba(23,49,61,0.06);
+}
+
+.metric-card {
+  padding: 1.25rem 1.3rem;
+}
+
+.metric-label {
+  display: block;
+  color: var(--brand-muted);
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.metric-value {
+  font-size: clamp(1.5rem, 2vw, 2rem);
+  color: var(--brand-ink);
+}
+
+.card-panel {
+  padding: 1.4rem;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.panel-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--brand-ink);
+}
+
+.panel-header a {
+  color: var(--brand-accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.list-tile-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 1rem;
+}
+
+.listing-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  border: 1px solid rgba(23,49,61,0.08);
+  border-radius: 0.9rem;
+  background: white;
+  padding: 0.8rem;
+}
+
+.listing-tile.small {
+  min-height: 160px;
+}
+
+.listing-thumb {
+  width: 100%;
+  height: 110px;
+  border-radius: 0.7rem;
+  background: linear-gradient(135deg, #dfeef0, #c8dfe4);
+  border: 1px solid rgba(23,49,61,0.08);
+}
+
+.placeholder-thumb.alt { background: linear-gradient(135deg, #f6efe1, #e4d5af); }
+.placeholder-thumb.accent { background: linear-gradient(135deg, #d9f0ee, #8fc9bf); }
+
+.listing-tile h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--brand-ink);
+}
+
+.listing-tile p {
+  margin: 0;
+  color: var(--brand-muted);
+  font-size: 0.85rem;
+}
+
+.stacked-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.action-link {
+  display: block;
+  padding: 0.8rem 1rem;
+  border-radius: 0.75rem;
+  background: rgba(31,138,128,0.08);
+  color: var(--brand-ink);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.page-shell {
+  background: rgba(255,255,255,0.8);
+  border-radius: 1rem;
+  border: 1px solid rgba(23,49,61,0.08);
+  padding: 1.5rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.section-title {
+  margin: 0;
+  color: var(--brand-ink);
+  font-size: clamp(1.8rem, 2.8vw, 2.5rem);
+}
+
+.search-form {
+  display: flex;
+  width: min(100%, 420px);
+  gap: 0.75rem;
+}
+
+.search-form .form-control {
+  flex: 1;
+}
+
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.listing-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  border: 1px solid rgba(23,49,61,0.08);
+  border-radius: 1rem;
+  background: white;
+  overflow: hidden;
+  box-shadow: 0 8px 15px rgba(23,49,61,0.04);
+}
+
+.listing-card-image {
+  height: 180px;
+  background: linear-gradient(135deg, #deebee, #b9d4d1);
+}
+
+.listing-card-body {
+  padding: 1rem;
+}
+
+.listing-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.4rem;
+}
+
+.listing-card h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: rgba(31,138,128,0.12);
+  color: var(--brand-accent);
+}
+
+.meta-line {
+  color: var(--brand-muted);
+  font-size: 0.88rem;
+  margin: 0.15rem 0 0.5rem;
+}
+
+.listing-card .price {
+  font-weight: 700;
+  color: var(--brand-ink);
+  margin: 0;
+}
+
+.inline-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.review-list,
+.profile-stack,
+.form-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.review-item,
+.profile-card,
+.form-card {
+  background: white;
+  border: 1px solid rgba(23,49,61,0.08);
+  border-radius: 1rem;
+  padding: 1rem 1.1rem;
+}
+
+.rating-stars {
+  color: #f0ba4a;
+  letter-spacing: 0.08em;
+}
+
+.form-card form {
+  display: grid;
+  gap: 1rem;
+}
+
+.form-card .form-group {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.form-card label {
+  font-weight: 600;
+  color: var(--brand-ink);
+}
+
+.form-card textarea,
+.form-card input,
+.form-card select {
+  border: 1px solid rgba(23,49,61,0.15);
+  border-radius: 0.7rem;
+  padding: 0.75rem 0.9rem;
+  background: rgba(247,250,248,0.8);
+}
+
+.detail-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 1.5rem;
+}
+
+.detail-media {
+  border-radius: 1rem;
+  overflow: hidden;
+  min-height: 240px;
+  background: linear-gradient(135deg, #dfeef0, #c8dfe4);
+  border: 1px solid rgba(23,49,61,0.08);
+}
+
+.detail-box {
+  background: white;
+  border-radius: 1rem;
+  border: 1px solid rgba(23,49,61,0.08);
+  padding: 1.3rem;
+}
+
+.detail-box h2 {
+  margin-top: 0;
+}
+
+.booking-form {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+
+.btn-primary {
+  background: var(--brand-accent);
+  border-color: var(--brand-accent);
+}
+
+.btn-primary:hover {
+  background: color-mix(in srgb, var(--brand-accent) 85%, black);
+  border-color: color-mix(in srgb, var(--brand-accent) 85%, black);
+}
+
+.btn-outline-secondary {
+  border-color: rgba(23,49,61,0.2);
+  color: var(--brand-ink);
+}
+
+@media (max-width: 900px) {
+  .detail-layout {
+    grid-template-columns: 1fr;
+  }
 }

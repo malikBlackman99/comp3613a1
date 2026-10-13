@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""FastStarter project CLI — stdlib argparse (no extra CLI library).
+"""FastStarter project CLI ? standard library argparse (no extra CLI library).
 
-From the project root (venv active, deps installed; ``.env`` optional — falls back to ``.env.example``):
+From the project root (venv active, deps installed; `.env` optional ? falls back to `.env.example`):
 
     python manage.py init
     python manage.py run
@@ -14,7 +14,6 @@ From the project root (venv active, deps installed; ``.env`` optional — falls 
 from __future__ import annotations
 
 import argparse
-import sys
 from pathlib import Path
 
 
@@ -29,8 +28,7 @@ def cmd_init(args: argparse.Namespace) -> None:
 
     _ensure_models_loaded()
     if args.drop:
-        print("Dropping all tables…")
-        # Drop can fail on a brand-new empty DB; create path still retries.
+        print("Dropping all tables?")
         try:
             drop_all()
         except Exception as exc:  # noqa: BLE001
@@ -38,8 +36,8 @@ def cmd_init(args: argparse.Namespace) -> None:
 
             if not is_db_not_ready_error(exc):
                 raise
-            print(f"Database not ready yet while dropping ({exc}); continuing…")
-    print("Creating tables…")
+            print(f"Database not ready yet while dropping ({exc}); continuing?")
+    print("Creating tables?")
     ensure_db_and_tables()
     print(f"Database ready ({get_settings().database_uri}).")
     if getattr(args, "seed", True):
@@ -47,11 +45,7 @@ def cmd_init(args: argparse.Namespace) -> None:
 
 
 def cmd_seed(args: argparse.Namespace) -> None:
-    """Insert demo users.
-
-    bob / bobpass       (regular_user)
-    admin / adminpass   (admin)
-    """
+    """Insert demo users."""
     from app.database import ensure_db_and_tables, get_cli_session
     from app.repositories.user import UserRepository
     from app.schemas.user import AdminCreate, RegularUserCreate
@@ -63,6 +57,7 @@ def cmd_seed(args: argparse.Namespace) -> None:
     demo_users = [
         ("bob", "bob@example.com", "bobpass", "regular_user"),
         ("admin", "admin@example.com", "adminpass", "admin"),
+        ("landlord", "landlord@example.com", "landlordpass", "regular_user"),
     ]
 
     created = 0
@@ -85,9 +80,49 @@ def cmd_seed(args: argparse.Namespace) -> None:
             )
             print(f"  create {username} ({role})")
             created += 1
+        _seed_demo_listings(session, repo)
+    print(f"Seed done ? created {created}, skipped {skipped}.")
+    print("Login with bob/bobpass, admin/adminpass, or landlord/landlordpass")
 
-    print(f"Seed done — created {created}, skipped {skipped}.")
-    print("Login with bob/bobpass or admin/adminpass")
+
+def _seed_demo_listings(session, user_repo) -> None:
+    from app.models.listing import Listing
+    from app.repositories.listing import ListingRepository
+
+    listing_repo = ListingRepository(session)
+    if listing_repo.get_all():
+        return
+    landlord = user_repo.get_by_username("landlord")
+    if landlord is None:
+        return
+    samples = [
+        {
+            "title": "Harbour View",
+            "address": "12 Campus Road",
+            "city": "St. Augustine",
+            "price_per_month": 3200.0,
+            "property_type": "Apartment",
+            "description": "Two-bedroom unit walking distance to campus.",
+        },
+        {
+            "title": "Oakline Court",
+            "address": "44 New Town Street",
+            "city": "New Town",
+            "price_per_month": 2800.0,
+            "property_type": "Studio",
+            "description": "Furnished studio with reliable transit nearby.",
+        },
+        {
+            "title": "City Loop",
+            "address": "9 Centre Avenue",
+            "city": "Town Centre",
+            "price_per_month": 3500.0,
+            "property_type": "Shared",
+            "description": "Shared house with private rooms for students.",
+        },
+    ]
+    for sample in samples:
+        listing_repo.create(Listing(landlord_id=landlord.id, **sample))
 
 
 def cmd_run(args: argparse.Namespace) -> None:
@@ -113,11 +148,7 @@ def cmd_run(args: argparse.Namespace) -> None:
 
 
 def cmd_report(args: argparse.Namespace) -> None:
-    """Build the submission package: merge judge, package transcripts, write PDF.
-
-    Guide must (1) write ``docs/judge.md`` and (2) pull every Guide chat into
-    ``docs/transcripts/*.md`` before this command. Report only packages those files.
-    """
+    """Build the submission package: merge judge, package transcripts, write PDF."""
     from app.report_pdf import export_report
     from app.skill_integrity import format_report, verify
 
@@ -215,7 +246,7 @@ def cmd_users(args: argparse.Namespace) -> None:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="python manage.py",
-        description="FastStarter Python CLI — init database, seed demo data, run the app.",
+        description="FastStarter Python CLI ? init database, seed demo data, run the app.",
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -229,87 +260,54 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_false",
         help="Create tables without dropping existing ones",
     )
+    p_init.set_defaults(drop=True)
     p_init.add_argument(
         "--no-seed",
         dest="seed",
         action="store_false",
-        help="Skip demo user seed after creating tables",
+        help="Skip seeding demo users after creating tables",
     )
-    p_init.set_defaults(drop=True, seed=True, func=cmd_init)
+    p_init.set_defaults(seed=True)
+    p_init.set_defaults(func=cmd_init)
 
-    p_seed = sub.add_parser(
-        "seed",
-        help="Insert demo users only (idempotent; also runs as part of init)",
-    )
+    p_run = sub.add_parser("run", help="Start the web app")
+    p_run.add_argument("--host", default=None)
+    p_run.add_argument("--port", type=int, default=None)
+    p_run.add_argument("--reload", action="store_true")
+    p_run.set_defaults(func=cmd_run)
+
+    p_seed = sub.add_parser("seed", help="Insert demo users")
     p_seed.set_defaults(func=cmd_seed)
 
-    p_run = sub.add_parser("run", help="Start the web app (uvicorn)")
-    p_run.add_argument("--host", default=None, help="Bind host")
-    p_run.add_argument("--port", type=int, default=None, help="Bind port")
-    reload_group = p_run.add_mutually_exclusive_group()
-    reload_group.add_argument(
-        "--reload", dest="reload", action="store_true", default=None, help="Enable auto-reload"
-    )
-    reload_group.add_argument(
-        "--no-reload", dest="reload", action="store_false", help="Disable auto-reload"
-    )
-    p_run.set_defaults(func=cmd_run, reload=None)
-
-    p_users = sub.add_parser("users", help="List users in the database")
-    p_users.set_defaults(func=cmd_users)
-
-    p_report = sub.add_parser(
-        "report",
-        help=(
-            "Build submission package: merge docs/judge.md, package docs/transcripts/, "
-            "write docs/report.pdf (Guide pulls chats + runs student-judge first)"
-        ),
-    )
-    p_report.add_argument("--name", required=True, help="Student name (printed on the PDF cover)")
-    p_report.add_argument("--id", dest="student_id", required=True, help="Student ID (PDF only)")
-    p_report.add_argument("--src", default=None, help="Markdown path (default: docs/report.md)")
-    p_report.add_argument("--output", default=None, help="PDF path (default: docs/report.pdf)")
+    p_report = sub.add_parser("report", help="Build the report package")
+    p_report.add_argument("--name", required=True)
+    p_report.add_argument("--id", dest="student_id", required=True)
+    p_report.add_argument("--src", default=None)
+    p_report.add_argument("--output", default=None)
     p_report.set_defaults(func=cmd_report)
 
-    p_transcripts = sub.add_parser(
-        "transcripts",
-        help="Package agent-written docs/transcripts/*.md into INDEX + zip (no IDE scrape)",
-    )
-    p_transcripts.add_argument(
-        "--no-zip",
-        action="store_true",
-        help="Skip writing docs/transcripts.zip",
-    )
-    p_transcripts.set_defaults(func=cmd_transcripts)
-
-    p_usecase = sub.add_parser(
-        "usecase",
-        help="Render docs/diagrams/use-case.json to a UML use-case PNG",
-    )
-    p_usecase.add_argument("--spec", default=None, help="JSON spec (default: docs/diagrams/use-case.json)")
-    p_usecase.add_argument("--output", default=None, help="PNG path (default: docs/diagrams/use-case.png)")
+    p_usecase = sub.add_parser("usecase", help="Render the UML use-case diagram")
+    p_usecase.add_argument("--spec", default=None)
+    p_usecase.add_argument("--output", default=None)
     p_usecase.set_defaults(func=cmd_usecase)
 
-    p_skills_verify = sub.add_parser(
-        "skills-verify",
-        help="Check course skills against .agents/skills.lock.json",
-    )
-    p_skills_verify.set_defaults(func=cmd_skills_verify)
+    p_verify = sub.add_parser("skills-verify", help="Verify course skill integrity")
+    p_verify.set_defaults(func=cmd_skills_verify)
 
-    p_skills_lock = sub.add_parser(
-        "skills-lock",
-        help="Rewrite .agents/skills.lock.json (course authors; needs FASTSTARTER_SKILLS_LOCK=1)",
-    )
-    p_skills_lock.set_defaults(func=cmd_skills_lock)
+    p_lock = sub.add_parser("skills-lock", help="Rewrite the course skill lock file")
+    p_lock.set_defaults(func=cmd_skills_lock)
+
+    p_users = sub.add_parser("users", help="List current users")
+    p_users.set_defaults(func=cmd_users)
 
     return parser
 
 
-def main(argv: list[str] | None = None) -> None:
+def main() -> None:
     parser = build_parser()
-    args = parser.parse_args(argv)
+    args = parser.parse_args()
     args.func(args)
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()
