@@ -25,14 +25,15 @@ This package is kept separate from Assignment 1's instructions and report. It ex
 - **Integration/API tests:** [`tests/test_accommodation_api.py`](../../tests/test_accommodation_api.py).
 - **Postman collection:** [StudentNest API Tests](../../postman/studentnest-api.postman_collection.json).
 - **Run automated tests:** `python -m pytest -q`.
-- **Run the application for manual UAT:** `python manage.py init` then `python manage.py run`.
+- **Run the application for manual UAT:** `python manage.py init --no-drop` then `python manage.py run` (preserves existing local data).
 
-The API exposes public listing read/search operations and authenticated listing, booking, and review operations. Review creation is restricted to users with a booking. The user directory endpoint is admin-only. Unit and integration test results must be captured from the actual commands before submission; UAT results and screenshots must come from the tester's browser run.
+The API exposes public listing read/search operations and authenticated listing, booking, and review operations. Review creation is restricted to users with a booking. The user directory endpoint is admin-only. Automated test results are recorded from the actual pytest run; UAT results, Postman run results, and their screenshots must come from the tester's own runs.
 
 ## Results and evidence
 
-- **Unit test result:** 7 passed; terminal screenshot pending.
+- **Unit test result:** 8 passed; terminal screenshot pending.
 - **Integration test result:** 7 passed; terminal screenshot pending.
+- **Combined pytest run:** 15 passed; 19 deprecation warnings; terminal screenshot pending.
 - **Postman collection result:** Pending collection run and screenshot.
 - **Completed UAT report:** Pending execution; record outcomes in [test-plans.md](test-plans.md) and attach screenshots.
 

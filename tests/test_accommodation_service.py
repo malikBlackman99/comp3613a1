@@ -80,7 +80,12 @@ def test_create_booking_calculates_monthly_total(service):
     assert booking.total_price == 1500
 
 
-def test_create_booking_rejects_non_positive_date_range(service):
+@pytest.mark.parametrize(
+    "end_date",
+    [date(2026, 2, 1), date(2026, 1, 31)],
+    ids=["same-day", "before-start"],
+)
+def test_create_booking_rejects_non_positive_date_range(service, end_date):
     accommodation, listing_repository, booking_repository, _ = service
 
     with pytest.raises(ValueError, match="End date must be after start date"):
@@ -88,7 +93,7 @@ def test_create_booking_rejects_non_positive_date_range(service):
             7,
             1,
             start_date=date(2026, 2, 1),
-            end_date=date(2026, 2, 1),
+            end_date=end_date,
         )
 
     listing_repository.get_by_id.assert_not_called()

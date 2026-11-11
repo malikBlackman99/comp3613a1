@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta, timezone
 
 from fastapi.testclient import TestClient
-from sqlmodel import Session
+from sqlmodel import Session, select
 
+from app.models.booking import Booking
 from app.models.listing import Listing
 from app.models.user import User
 from app.utilities.security import create_access_token
@@ -159,6 +160,7 @@ def test_booking_rejects_non_increasing_dates(client, db_session, accounts):
     )
 
     assert response.status_code == 422
+    assert db_session.exec(select(Booking)).all() == []
 
 
 def test_user_directory_api_is_admin_only(client, accounts):
