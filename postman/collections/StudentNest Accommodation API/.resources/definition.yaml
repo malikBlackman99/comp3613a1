@@ -1,0 +1,7 @@
+$kind: collection
+description: Assignment 2 API checks. Run in order against a locally initialized FastStarter app; Postman retains the access_token cookie between requests.
+variables:
+  baseUrl: http://127.0.0.1:5000
+  listingId: ""
+  isoStartDate: ""
+  isoEndDate: ""

@@ -1,0 +1,22 @@
+$kind: http-request
+url: "{{baseUrl}}/api/reviews"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "listing_id": {{listingId}},
+      "rating": 5,
+      "comment": "Clean, quiet, and close to campus"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('previously booked student can submit a review', function () {
+        pm.response.to.have.status(201);
+        pm.expect(pm.response.json().rating).to.eql(5);
+      });
+    language: text/javascript
+order: 8000

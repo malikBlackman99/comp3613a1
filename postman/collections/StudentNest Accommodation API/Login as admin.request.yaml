@@ -1,0 +1,19 @@
+$kind: http-request
+url: "{{baseUrl}}/login"
+method: POST
+headers:
+  Content-Type: application/x-www-form-urlencoded
+body:
+  type: urlencoded
+  content:
+    username: admin
+    password: adminpass
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('admin login sets a session cookie', function () {
+        pm.expect(pm.response.code).to.be.oneOf([200, 302, 303]);
+        pm.expect(pm.cookies.has('access_token')).to.be.true;
+      });
+    language: text/javascript
+order: 12000

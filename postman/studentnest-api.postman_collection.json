@@ -89,7 +89,7 @@
             "type": "text/javascript",
             "exec": [
               "pm.test('landlord login sets a session cookie', function () {",
-              "  pm.expect(pm.response.code).to.be.oneOf([302, 303]);",
+              "  pm.expect(pm.response.code).to.be.oneOf([200, 302, 303]);",
               "  pm.expect(pm.cookies.has('access_token')).to.be.true;",
               "});"
             ]
@@ -189,7 +189,7 @@
             "type": "text/javascript",
             "exec": [
               "pm.test('student login sets a session cookie', function () {",
-              "  pm.expect(pm.response.code).to.be.oneOf([302, 303]);",
+              "  pm.expect(pm.response.code).to.be.oneOf([200, 302, 303]);",
               "  pm.expect(pm.cookies.has('access_token')).to.be.true;",
               "});"
             ]
@@ -403,7 +403,7 @@
             "type": "text/javascript",
             "exec": [
               "pm.test('admin login sets a session cookie', function () {",
-              "  pm.expect(pm.response.code).to.be.oneOf([302, 303]);",
+              "  pm.expect(pm.response.code).to.be.oneOf([200, 302, 303]);",
               "  pm.expect(pm.cookies.has('access_token')).to.be.true;",
               "});"
             ]

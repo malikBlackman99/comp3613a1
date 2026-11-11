@@ -1,0 +1,12 @@
+$kind: http-request
+url: "{{baseUrl}}/api/me/reviews"
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('student can read their reviews', function () {
+        pm.response.to.have.status(200);
+        pm.expect(pm.response.json()).to.be.an('array').that.is.not.empty;
+      });
+    language: text/javascript
+order: 11000

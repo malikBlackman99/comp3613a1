@@ -1,0 +1,14 @@
+$kind: http-request
+url: "{{baseUrl}}/api/users"
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('admin can read user directory without password fields', function () {
+        pm.response.to.have.status(200);
+        const users = pm.response.json();
+        pm.expect(users).to.be.an('array');
+        pm.expect(users.every(function (user) { return !('password' in user); })).to.be.true;
+      });
+    language: text/javascript
+order: 13000

@@ -4,8 +4,9 @@ This package is kept separate from Assignment 1's instructions and report. It ex
 
 ## Student and project
 
-- **Name:** Add before PDF export.
-- **ID:** Add before PDF export.
+- **Name:** Malik Blackman.
+- **Student ID:** Printed on the PDF cover only; intentionally omitted from this Markdown file.
+- **PDF submission:** [Assignment 2 submission PDF](Assignment2-Submission.pdf).
 - **Project:** Student Accommodation — StudentNest, a student accommodation listing, management, and review application.
 - **Assignment 1 project report:** [docs/report.md](../report.md).
 - **Public application:** [https://faststarter-0g4k.onrender.com](https://faststarter-0g4k.onrender.com).
@@ -31,10 +32,10 @@ The API exposes public listing read/search operations and authenticated listing,
 
 ## Results and evidence
 
-- **Unit test result:** 8 passed; terminal screenshot pending.
-- **Integration test result:** 7 passed; terminal screenshot pending.
-- **Combined pytest run:** 15 passed; 19 deprecation warnings; terminal screenshot pending.
-- **Postman collection result:** Pending collection run and screenshot.
-- **Completed UAT report:** Pending execution; record outcomes in [test-plans.md](test-plans.md) and attach screenshots.
+- **Unit test result:** 8 passed; [terminal screenshot](Screenshot%202026-11-10%20235426.png).
+- **Integration test result:** 7 passed; [terminal screenshot](Screenshot%202026-11-10%20235531.png).
+- **Combined pytest run:** 15 passed; 19 deprecation warnings. Individual unit/integration output screenshots are included.
+- **Postman collection result:** Rerun passed all 13 checks (0 failed, 0 skipped, 0 errors). [Rerun summary screenshot](Screenshot%202026-11-11%20003854.png). The initial 10 passed / 3 failed run exposed redirect-following assertions, which were corrected in the collection.
+- **UAT evidence:** UAT-02 through UAT-05 passed. UAT-01 is partial: the “hawaii” search displays the expected no-results message, but the detail screenshot shows a literal rating-template placeholder instead of a rendered rating. The landlord's search for another landlord's “palm residences” listing returned the empty state, confirming owner-scoped management results. See the evidence table and screenshots in [test-plans.md](test-plans.md).
 
-Do not represent pending checks as passing. Add the final screenshots, student details, and any UAT findings before exporting the single Assignment 2 PDF.
+The UAT execution record and screenshots are included in this Assignment 2 submission package. UAT-01's listing-detail rating rendering issue remains documented as an unresolved defect.

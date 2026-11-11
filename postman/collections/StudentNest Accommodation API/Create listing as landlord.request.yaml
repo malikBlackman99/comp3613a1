@@ -1,0 +1,28 @@
+$kind: http-request
+url: "{{baseUrl}}/api/listings"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "title": "Postman Campus Studio",
+      "address": "8 Test Road",
+      "city": "St. Augustine",
+      "price_per_month": 1800,
+      "property_type": "Studio",
+      "description": "Created by the Assignment 2 Postman collection"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('authenticated landlord creates a listing', function () {
+        pm.response.to.have.status(201);
+        const listing = pm.response.json();
+        pm.expect(listing.title).to.eql('Postman Campus Studio');
+        pm.expect(listing.landlord_id).to.be.a('number');
+        pm.collectionVariables.set('listingId', listing.id);
+      });
+    language: text/javascript
+order: 3000

@@ -1,0 +1,28 @@
+$kind: http-request
+url: "{{baseUrl}}/api/listings/{{listingId}}/bookings"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "start_date": "{{isoStartDate}}",
+      "end_date": "{{isoEndDate}}"
+    }
+scripts:
+  - type: beforeRequest
+    code: |-
+      const start = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+      const end = new Date(start.getTime() + 30 * 24 * 60 * 60 * 1000);
+      pm.collectionVariables.set('isoStartDate', start.toISOString().slice(0, 10));
+      pm.collectionVariables.set('isoEndDate', end.toISOString().slice(0, 10));
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('student can create a booking', function () {
+        pm.response.to.have.status(201);
+        pm.expect(pm.response.json().status).to.eql('pending');
+      });
+    language: text/javascript
+order: 7000
