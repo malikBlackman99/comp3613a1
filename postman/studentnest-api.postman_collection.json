@@ -1,0 +1,438 @@
+{
+  "info": {
+    "_postman_id": "af42992d-c6ea-45a9-a779-4e8d3624f1cc",
+    "name": "StudentNest Accommodation API",
+    "description": "Assignment 2 API checks. Run in order against a locally initialized FastStarter app; Postman retains the access_token cookie between requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:5000"
+    },
+    {
+      "key": "listingId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Public listing search",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/listings?q=St.%20Augustine",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "listings"
+          ],
+          "query": [
+            {
+              "key": "q",
+              "value": "St. Augustine"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('public search returns 200 and a JSON array', function () {",
+              "  pm.response.to.have.status(200);",
+              "  pm.expect(pm.response.json()).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login as landlord",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "username",
+              "value": "landlord",
+              "type": "text"
+            },
+            {
+              "key": "password",
+              "value": "landlordpass",
+              "type": "text"
+            }
+          ]
+        },
+        "url": "{{baseUrl}}/login",
+        "protocolProfileBehavior": {
+          "followRedirects": false
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('landlord login sets a session cookie', function () {",
+              "  pm.expect(pm.response.code).to.be.oneOf([302, 303]);",
+              "  pm.expect(pm.cookies.has('access_token')).to.be.true;",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create listing as landlord",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Postman Campus Studio\",\n  \"address\": \"8 Test Road\",\n  \"city\": \"St. Augustine\",\n  \"price_per_month\": 1800,\n  \"property_type\": \"Studio\",\n  \"description\": \"Created by the Assignment 2 Postman collection\"\n}"
+        },
+        "url": "{{baseUrl}}/api/listings"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('authenticated landlord creates a listing', function () {",
+              "  pm.response.to.have.status(201);",
+              "  const listing = pm.response.json();",
+              "  pm.expect(listing.title).to.eql('Postman Campus Studio');",
+              "  pm.expect(listing.landlord_id).to.be.a('number');",
+              "  pm.collectionVariables.set('listingId', listing.id);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read created listing",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/listings/{{listingId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('listing detail returns the created resource', function () {",
+              "  pm.response.to.have.status(200);",
+              "  pm.expect(pm.response.json().id).to.eql(Number(pm.collectionVariables.get('listingId')));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login as student",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "username",
+              "value": "bob",
+              "type": "text"
+            },
+            {
+              "key": "password",
+              "value": "bobpass",
+              "type": "text"
+            }
+          ]
+        },
+        "url": "{{baseUrl}}/login",
+        "protocolProfileBehavior": {
+          "followRedirects": false
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('student login sets a session cookie', function () {",
+              "  pm.expect(pm.response.code).to.be.oneOf([302, 303]);",
+              "  pm.expect(pm.cookies.has('access_token')).to.be.true;",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reject review before booking",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"listing_id\": {{listingId}},\n  \"rating\": 5,\n  \"comment\": \"Review before booking should be rejected\"\n}"
+        },
+        "url": "{{baseUrl}}/api/reviews"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('unbooked student cannot review the listing', function () {",
+              "  pm.response.to.have.status(403);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Book listing as student",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"start_date\": \"{{isoStartDate}}\",\n  \"end_date\": \"{{isoEndDate}}\"\n}"
+        },
+        "url": "{{baseUrl}}/api/listings/{{listingId}}/bookings"
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const start = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);",
+              "const end = new Date(start.getTime() + 30 * 24 * 60 * 60 * 1000);",
+              "pm.collectionVariables.set('isoStartDate', start.toISOString().slice(0, 10));",
+              "pm.collectionVariables.set('isoEndDate', end.toISOString().slice(0, 10));"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('student can create a booking', function () {",
+              "  pm.response.to.have.status(201);",
+              "  pm.expect(pm.response.json().status).to.eql('pending');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Submit review after booking",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"listing_id\": {{listingId}},\n  \"rating\": 5,\n  \"comment\": \"Clean, quiet, and close to campus\"\n}"
+        },
+        "url": "{{baseUrl}}/api/reviews"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('previously booked student can submit a review', function () {",
+              "  pm.response.to.have.status(201);",
+              "  pm.expect(pm.response.json().rating).to.eql(5);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read listing reviews",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/listings/{{listingId}}/reviews"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('listing review collection includes the submitted review', function () {",
+              "  pm.response.to.have.status(200);",
+              "  const reviews = pm.response.json();",
+              "  pm.expect(reviews).to.be.an('array').that.is.not.empty;",
+              "  pm.expect(reviews[0].listing_id).to.eql(Number(pm.collectionVariables.get('listingId')));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read my bookings",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/me/bookings"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('student can read their bookings', function () {",
+              "  pm.response.to.have.status(200);",
+              "  pm.expect(pm.response.json()).to.be.an('array').that.is.not.empty;",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Read my reviews",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/me/reviews"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('student can read their reviews', function () {",
+              "  pm.response.to.have.status(200);",
+              "  pm.expect(pm.response.json()).to.be.an('array').that.is.not.empty;",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Login as admin",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/x-www-form-urlencoded"
+          }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {
+              "key": "username",
+              "value": "admin",
+              "type": "text"
+            },
+            {
+              "key": "password",
+              "value": "adminpass",
+              "type": "text"
+            }
+          ]
+        },
+        "url": "{{baseUrl}}/login",
+        "protocolProfileBehavior": {
+          "followRedirects": false
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('admin login sets a session cookie', function () {",
+              "  pm.expect(pm.response.code).to.be.oneOf([302, 303]);",
+              "  pm.expect(pm.cookies.has('access_token')).to.be.true;",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin-only user directory",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/users"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('admin can read user directory without password fields', function () {",
+              "  pm.response.to.have.status(200);",
+              "  const users = pm.response.json();",
+              "  pm.expect(users).to.be.an('array');",
+              "  pm.expect(users.every(function (user) { return !('password' in user); })).to.be.true;",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

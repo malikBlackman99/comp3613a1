@@ -62,6 +62,8 @@ class AccommodationService:
         start_date: date,
         end_date: date,
     ) -> Booking:
+        if end_date <= start_date:
+            raise ValueError("End date must be after start date")
         listing = self.get_listing(listing_id)
         if listing is None:
             raise ValueError("Listing does not exist")
@@ -84,6 +86,13 @@ class AccommodationService:
         rating: int,
         comment: str,
     ) -> Review:
+        if self.get_listing(listing_id) is None:
+            raise ValueError("Listing does not exist")
+        booked_listing_ids = {
+            listing.id for listing in self.get_booked_listings(student_id)
+        }
+        if listing_id not in booked_listing_ids:
+            raise PermissionError("A review requires a previous booking")
         review = Review(
             student_id=student_id,
             listing_id=listing_id,
@@ -94,6 +103,12 @@ class AccommodationService:
 
     def get_reviews_for_listing(self, listing_id: int) -> list[Review]:
         return self.review_repository.get_for_listing(listing_id)
+
+    def get_reviews_for_student(self, student_id: int) -> list[Review]:
+        return self.review_repository.get_for_student(student_id)
+
+    def get_bookings_for_student(self, student_id: int) -> list[Booking]:
+        return self.booking_repository.get_for_student(student_id)
 
     def get_user_listings(self, landlord_id: int, query: str = "") -> list[Listing]:
         return self.listing_repository.get_by_landlord(landlord_id, query=query)
